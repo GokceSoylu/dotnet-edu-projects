@@ -1,0 +1,15 @@
+/Users/gokcesoylu/dotnet-edu-projects/Week1_CSharpFundamentals/bin/Debug/net10.0/Week1_CSharpFundamentals
+/Users/gokcesoylu/dotnet-edu-projects/Week1_CSharpFundamentals/bin/Debug/net10.0/Week1_CSharpFundamentals.deps.json
+/Users/gokcesoylu/dotnet-edu-projects/Week1_CSharpFundamentals/bin/Debug/net10.0/Week1_CSharpFundamentals.runtimeconfig.json
+/Users/gokcesoylu/dotnet-edu-projects/Week1_CSharpFundamentals/bin/Debug/net10.0/Week1_CSharpFundamentals.dll
+/Users/gokcesoylu/dotnet-edu-projects/Week1_CSharpFundamentals/bin/Debug/net10.0/Week1_CSharpFundamentals.pdb
+/Users/gokcesoylu/dotnet-edu-projects/Week1_CSharpFundamentals/obj/Debug/net10.0/Week1_CSharpFundamentals.GeneratedMSBuildEditorConfig.editorconfig
+/Users/gokcesoylu/dotnet-edu-projects/Week1_CSharpFundamentals/obj/Debug/net10.0/Week1_CSharpFundamentals.AssemblyInfoInputs.cache
+/Users/gokcesoylu/dotnet-edu-projects/Week1_CSharpFundamentals/obj/Debug/net10.0/Week1_CSharpFundamentals.AssemblyInfo.cs
+/Users/gokcesoylu/dotnet-edu-projects/Week1_CSharpFundamentals/obj/Debug/net10.0/Week1_CSharpFundamentals.csproj.CoreCompileInputs.cache
+/Users/gokcesoylu/dotnet-edu-projects/Week1_CSharpFundamentals/obj/Debug/net10.0/Week1_CSharpFundamentals.sourcelink.json
+/Users/gokcesoylu/dotnet-edu-projects/Week1_CSharpFundamentals/obj/Debug/net10.0/Week1_CSharpFundamentals.dll
+/Users/gokcesoylu/dotnet-edu-projects/Week1_CSharpFundamentals/obj/Debug/net10.0/refint/Week1_CSharpFundamentals.dll
+/Users/gokcesoylu/dotnet-edu-projects/Week1_CSharpFundamentals/obj/Debug/net10.0/Week1_CSharpFundamentals.pdb
+/Users/gokcesoylu/dotnet-edu-projects/Week1_CSharpFundamentals/obj/Debug/net10.0/Week1_CSharpFundamentals.genruntimeconfig.cache
+/Users/gokcesoylu/dotnet-edu-projects/Week1_CSharpFundamentals/obj/Debug/net10.0/ref/Week1_CSharpFundamentals.dll
