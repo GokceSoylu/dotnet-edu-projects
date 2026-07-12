@@ -31,3 +31,20 @@ Console.WriteLine($"Konumlar eşit mi?: {konum1 == konum2}"); // ÇIKTI: True
 // Bu da readonly olduğu için değiştirilemez, ancak kopyalanabilir:
 var konum3 = konum1 with { Latitude = 40.9920 };
 Console.WriteLine($"Yeni Konum: {konum3}");
+
+Console.WriteLine("\n=== PRIMARY CONSTRUCTOR DENEYİSİ ===");
+
+// Eski usul uzun yazılan servisi çağırıyoruz
+var eskiServis = new ProductServiceOld("Server=Local;Db=Old", "Sistem_Eski");
+eskiServis.LogConnection();
+
+
+// Yeni, temiz Primary Constructor kullanan servisi çağırıyoruz
+var yeniServis = new ProductService("Server=Local;Db=New", "Sistem_Yeni");
+yeniServis.LogConnection();
+
+// KRİTİK FARK KONTROLÜ:
+//! var ad = yeniServis.connectionString; // HATA! Class'lardaki primary constructor parametrelerine dışarıdan ERİŞİLEMEZ.
+
+var urunRecord = new ProductDto("Laptop", 20000, "PC");
+var urunAdi = urunRecord.Name; // DOĞRU! Record'larda ise otomatik property oluştuğu için dışarıdan ERİŞİLEBİLİR.
