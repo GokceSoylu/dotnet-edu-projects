@@ -61,7 +61,7 @@ Console.WriteLine(araba1.Renk); // Çıktı: Mavi (Çünkü ikisi de aynı nesne
 
 ---
 
-## 💡 Önemli Bir İstisna: `string` Davranışı
+## Bir İstisna: `string` Davranışı
 
 `string` türü yapısal olarak bir **referans tipidir**. Ancak C#'ta geliştirme yaparken kafa karışıklığı yaratmaması adına, tıpkı bir değer tipiymiş gibi davranacak şekilde özel olarak tasarlanmıştır. Bu duruma **immutable (değiştirilemez)** denir. 
 
