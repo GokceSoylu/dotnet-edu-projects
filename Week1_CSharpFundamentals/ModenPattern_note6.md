@@ -44,7 +44,7 @@ Gözün gönlün açıldı değil mi? `case` yok, `break` yok, gereksiz parantez
 
 ## 2. Gelişmiş Desen Türleri: Koduna Seviye Atlatacak Numaralar 🚀
 
-Mülakatlarda ya da kod incelemelerinde (code review) "İşte bu çocuk işi biliyor" dedirtecek modern desenlere yakından bakalım.
+Modern desenlere yakından bakalım.
 
 ### A) İlişkisel (Relational) ve Mantıksal (Logical) Desenler
 C# 9.0 sayesinde artık `switch` içinde bildiğin matematiksel büyüktür/küçüktür (`<`, `>`, `<=`, `>=`) ifadelerini `and`, `or`, `not` gibi çok insani anahtar kelimelerle bağlayabiliyoruz.
