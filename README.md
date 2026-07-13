@@ -28,7 +28,4 @@ This repository is iteratively updated to cover a **13-week intensive technical 
 * Source code and individual projects will be structured here as development progresses.*
 ```bash
 .
-├── 01-Advanced-CSharp/        # Async/await, LINQ practices, Delegates
-├── 02-OOP-Design-Patterns/    # SOLID principles and design pattern implementations
-├── 03-WebAPI-Basics/          # RESTful APIs, Dependency Injection, Validation
-└── 04-Clean-Architecture/     # Production-ready layered architecture boilerplate
+├── /Week1_CSharpFundamentals/  # Async/await, LINQ practices, Delegates
