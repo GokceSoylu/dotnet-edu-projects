@@ -43,4 +43,5 @@ bool match = num switch
     [1, 2, 3, _, _, 6] => true,
     _ => false
 };
+
 Console.WriteLine(match);
