@@ -64,18 +64,18 @@ public class OrderService(ILogger logger)
 
 Bak burası çok önemli, mülakatlarda kıdemli yazılımcılar tam buradan vurmayı sever. Dışarıdan bakınca `record` ile `class` içindeki kullanımı tamamen aynı görünür ama derleyici arka planda bambaşka dünyalar yaratır:
 
-#### 🟢 `record Product(string Name);`
+#### `record Product(string Name);`
 Derleyici bunu gördüğü an, bu parametreden dışarıya açık, okunabilir ve sadece ilk değer ataması yapılabilir bir **Property** üretir: `public string Name { get; init; }`. 
 * **Sonuç:** Nesneye dışarıdan `nesne.Name` diyerek rahatça erişebilirsin.
 
-#### 🔵 `class ProductService(string connectionString);`
+####  `class ProductService(string connectionString);`
 Derleyici burada dışarıya açık bir property **üretmez**. Bu parametre, sınıfın içinde gizli, değiştirilemez (`private readonly` benzeri) bir alan (field) gibi davranır.
 * **Sonuç:** Dışarıdan `servis.connectionString` yazamazsın, hata alırsın! Bu değişkene sadece sınıfın kendi metotları içinden erişebilirsin.
 
 ---
 
-### 🔥 Kahve Arası Altın Kural (Özet)
+###  Kahve Arası Altın Kural (Özet)
 
 Eğer amacın sadece veri taşımaksa (DTO, Request/Response nesneleri gibi) ve verilere dışarıdan erişilsin istiyorsan **`record`** ile; eğer bir iş mantığı (business logic) servisi yazıyorsan, bağımlılıkları yönetip dış dünyaya bu servis değişkenlerini kapatmak istiyorsan **`class`** ile Primary Constructor kullanmalısın.
 
-Kodun sade, kahven taze olsun! Bir sonraki teknik kahve sohbetinde görüşmek üzere. ☕🚀
+Kodun sade, kahven taze olsun! Bir sonraki teknik sohbette görüşmek üzere. 
