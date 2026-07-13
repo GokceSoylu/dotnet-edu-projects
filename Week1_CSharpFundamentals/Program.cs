@@ -45,3 +45,20 @@ bool match = num switch
 };
 
 Console.WriteLine(match);
+
+
+List<int> sayilar = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+var odd = from s in sayilar
+          where s % 2 != 0
+          select s;
+foreach (var s in odd)
+{
+    Console.WriteLine(s);
+}
+Console.WriteLine("-------");
+//LINQ
+var even = sayilar.Where(s => s % 2 == 0);
+foreach (var s in even)
+{
+    Console.WriteLine(s);
+}
