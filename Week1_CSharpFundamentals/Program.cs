@@ -58,6 +58,8 @@ foreach (var s in odd)
 Console.WriteLine("-------");
 //LINQ
 var even = sayilar.Where(s => s % 2 == 0);
+sayilar.Add(12);
+
 foreach (var s in even)
 {
     Console.WriteLine(s);
