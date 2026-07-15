@@ -53,6 +53,9 @@ public class OrderService(AppDbContext dbContext)
         // Modern C# Pattern Matching (Tuple & Relational & Logical Patterns)
         string status = (totalProcessed, revenue) switch
         {
+            // 1. ÖNCELİKLİ YENİ CASE: Sipariş çok ama ciro sıfırsa (Öncelik için en üste yazdık)
+            ( > 50, 0) => "Critical: High Orders But No Revenue",
+
             (0, _) => "No Activity",
             (_, < 5000) => "Low Revenue",
             ( > 10 and <= 50, >= 5000 and < 20000) => "Optimal Operations",
