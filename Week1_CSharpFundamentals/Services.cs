@@ -5,90 +5,85 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Week1_CSharpFundamentals;
 
-// Primary Constructor yardımıyla AppDbContext bağımlılığını enjekte ediyoruz.
-public class OrderService(AppDbContext dbContext)
+public class ShippingService(AppDbContext dbContext)
 {
-    // --- 1. DEFERRED EXECUTION & IQUERYABLE ---
-    // Bu metot çağrıldığında veritabanına SQL gitmez, sadece sorgu taslağı (IQueryable) üretilir.
-    public IQueryable<Order> GetCompletedOrdersQuery()
+    public IQueryable<Shipment> GetPendingShipmentsQuery()
     {
-        return dbContext.Orders
-            .Include(o => o.Customer)
-            .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.Product)
-            .Where(o => o.Status == "Completed");
+        return dbContext.Shipments
+            .Include(s => s.Shipper)
+            .Where(s => s.ShippedDate == null);
     }
 
-    // --- 2. IQUERYABLE VS IENUMERABLE PERFORMANS SİMÜLASYONU ---
-    public void CompareBehaviors()
+    public void CompareShippingBehaviors()
     {
-        Console.WriteLine("\n[IQueryable Testi Başlıyor...] (Sorgular SQL sunucusunda tamamlanır)");
-        // Veritabanına sadece CustomerId = 1 olan siparişleri ve LIMIT 2 filtresini SQL düzeyinde gönderir.
-        var queryableResult = GetCompletedOrdersQuery()
-            .Where(o => o.CustomerId == 1)
+        Console.WriteLine("\n[IQueryable Sorgu Testi] (Filtreleme SQL Sunucusunda Yapılır)");
+        var queryableResult = GetPendingShipmentsQuery()
+            .Where(s => s.ShipperId == 1)
             .Take(2)
-            .ToList(); // İşte SQL bu satırda tetiklenir!
+            .ToList();
 
-        Console.WriteLine("\n[IEnumerable Testi Başlıyor...] (FİLTRE RAM'DE ÇALIŞIR!)");
-        // AsEnumerable() çağırdığımız an EF Core veritabanındaki tüm 'Completed' siparişleri RAM'e çeker!
-        // CustomerId = 1 ve Take(2) filtrelemeleri C# tarafında RAM üzerinde uygulanır. Ciddi bir bellek israfıdır.
-        var enumerableResult = GetCompletedOrdersQuery()
+        Console.WriteLine("\n[IEnumerable Sorgu Testi] (Filtreleme RAM'de Yapılır!)");
+        var enumerableResult = GetPendingShipmentsQuery()
             .AsEnumerable()
-            .Where(o => o.CustomerId == 1) // RAM seviyesinde filtreleme
+            .Where(s => s.ShipperId == 1)
             .Take(2)
             .ToList();
     }
 
-    // --- 3. SWITCH PATTERN MATCHING & RECORD STRUCT ---
-    public PerformanceReport GeneratePerformanceReport()
+    public CarrierPerformanceReport AnalyzeCarrierPerformance(int shipperId)
     {
-        var orders = dbContext.Orders.Include(o => o.OrderItems).ToList();
+        var shipments = dbContext.Shipments
+            .Where(s => s.ShipperId == shipperId)
+            .ToList();
 
-        int totalProcessed = orders.Count(o => o.Status is "Completed" or "Shipped");
-        decimal revenue = orders
-            .Where(o => o.Status != "Cancelled")
-            .SelectMany(o => o.OrderItems)
-            .Sum(oi => oi.Quantity * oi.Price);
+        int totalShipments = shipments.Count;
 
-        // Modern C# Pattern Matching (Tuple & Relational & Logical Patterns)
-        string status = (totalProcessed, revenue) switch
+        // String olan FreightCost alanını güvenli bir şekilde decimal'a çevirip topluyoruz
+        decimal totalFreightCost = shipments
+            .Sum(s => decimal.TryParse(s.FreightCost, out var val) ? val : 0m);
+
+        double averageDeliveryDays = shipments
+            .Where(s => s.ShippedDate.HasValue && s.DeliveredDate.HasValue)
+            .Select(s => (s.DeliveredDate!.Value - s.ShippedDate!.Value).TotalDays)
+            .DefaultIfEmpty(0)
+            .Average();
+
+        string efficiencyRating = (totalShipments, averageDeliveryDays, totalFreightCost) switch
         {
-            // 1. ÖNCELİKLİ YENİ CASE: Sipariş çok ama ciro sıfırsa (Öncelik için en üste yazdık)
-            ( > 50, 0) => "Critical: High Orders But No Revenue",
-
-            (0, _) => "No Activity",
-            (_, < 5000) => "Low Revenue",
-            ( > 10 and <= 50, >= 5000 and < 20000) => "Optimal Operations",
-            ( > 50, _) => "Outstanding Performance",
+            (0, _, _) => "No Activity",
+            ( > 50, > 5.0, _) => "Critical Delay: High Volume But Slow",
+            (_, <= 2.0, < 10000) => "Excellent: Fast and Cost-Effective",
+            (_, > 2.0 and <= 5.0, >= 10000) => "Standard: High Cost",
             _ => "Stable"
         };
 
-        // Stack üzerinde yaşayan hafif bir readonly record struct dönüyoruz
-        return new PerformanceReport(totalProcessed, revenue, status);
+        return new CarrierPerformanceReport(totalShipments, totalFreightCost, efficiencyRating);
     }
 
-    // --- 4. RECORD WITH EXPRESSION TEST ---
-    public void DemonstrateRecordWith()
+    public void DemonstrateDtoCopy()
     {
-        var details = dbContext.Orders
-            .Include(o => o.Customer)
-            .Include(o => o.OrderItems)
-            .Select(o => new OrderDetailDto(
-                o.OrderId,
-                o.Customer.Name,
-                o.OrderItems.Sum(oi => oi.Quantity * oi.Price),
-                o.Status
-            )).ToList();
+        var shipmentDto = dbContext.Shipments
+            .Include(s => s.Shipper)
+            .AsEnumerable() // Tip dönüştürme (TryParse) işlemini RAM tarafında güvenle yapabilmek için
+            .Select(s => new ShipmentDetailDto(
+                s.ShipmentId,
+                s.Shipper.ShipperName,
+                s.TrackingNumber ?? "PENDING",
+                decimal.TryParse(s.FreightCost, out var cost) ? cost : 0m,
+                s.ShippedDate == null ? "Preparing" : "In Transit"
+            ))
+            .FirstOrDefault();
 
-        if (details.Any())
+        if (shipmentDto is not null)
         {
-            var original = details.First();
+            var updatedDto = shipmentDto with
+            {
+                TrackingNumber = "TRK-999888777",
+                DeliveryStatus = "Shipped"
+            };
 
-            // 'with' anahtar kelimesiyle orijinal nesneye dokunmadan yeni bir kopyasını türetiyoruz (Immutability)
-            var updated = original with { Status = "Updated & Processed" };
-
-            Console.WriteLine($"\nOrijinal Record DTO  : {original}");
-            Console.WriteLine($"with ile Kopyalanan  : {updated}");
+            Console.WriteLine($"Orijinal Record: {shipmentDto}");
+            Console.WriteLine($"Kopyalanan Record: {updatedDto}");
         }
     }
 }

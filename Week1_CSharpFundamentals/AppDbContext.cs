@@ -4,32 +4,26 @@ namespace Week1_CSharpFundamentals;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
-    public DbSet<Customer> Customers => Set<Customer>();
-    public DbSet<Product> Products => Set<Product>();
     public DbSet<Order> Orders => Set<Order>();
-    public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+    public DbSet<Shipment> Shipments => Set<Shipment>();
+    public DbSet<Shipper> Shippers => Set<Shipper>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Fluent API ile tabloların anahtarlarını ve ilişkilerini haritalıyoruz
-        modelBuilder.Entity<Customer>().HasKey(c => c.CustomerId);
-        modelBuilder.Entity<Product>().HasKey(p => p.ProductId);
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<Order>().HasKey(o => o.OrderId);
-        modelBuilder.Entity<OrderItem>().HasKey(oi => oi.OrderItemId);
+        modelBuilder.Entity<Shipment>().HasKey(s => s.ShipmentId);
+        modelBuilder.Entity<Shipper>().HasKey(sh => sh.ShipperId);
 
-        modelBuilder.Entity<Order>()
-            .HasOne(o => o.Customer)
-            .WithMany(c => c.Orders)
-            .HasForeignKey(o => o.CustomerId);
+        modelBuilder.Entity<Shipment>()
+            .HasOne<Order>()
+            .WithMany(o => o.Shipments)
+            .HasForeignKey(s => s.OrderId);
 
-        modelBuilder.Entity<OrderItem>()
-            .HasOne(oi => oi.Order)
-            .WithMany(o => o.OrderItems)
-            .HasForeignKey(oi => oi.OrderId);
-
-        modelBuilder.Entity<OrderItem>()
-            .HasOne(oi => oi.Product)
+        modelBuilder.Entity<Shipment>()
+            .HasOne(s => s.Shipper)
             .WithMany()
-            .HasForeignKey(oi => oi.ProductId);
+            .HasForeignKey(s => s.ShipperId);
     }
 }
