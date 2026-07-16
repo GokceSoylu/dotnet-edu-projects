@@ -53,3 +53,16 @@ public class Order
 
     public List<Shipment> Shipments { get; set; } = [];
 }
+public record ShipmentDetailDto(
+    int ShipmentId,
+    string ShipperName,
+    string TrackingNumber,
+    decimal FreightCost,
+    string DeliveryStatus
+);
+
+public readonly record struct CarrierPerformanceReport(
+    int TotalShipments,
+    decimal TotalFreightCost,
+    string EfficiencyRating
+);
