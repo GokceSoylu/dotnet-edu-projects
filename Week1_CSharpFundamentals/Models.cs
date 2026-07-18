@@ -1,42 +1,51 @@
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Week1_CSharpFundamentals;
-
-//----------------------------
-//Veri Tabanı Entity Modelleri
-//----------------------------
 
 [Table("customers")]
 public class Customer
 {
     [Column("customer_id")]
-    public int CustomerID { get; set; }
+    public int CustomerId { get; set; }
+
     [Column("name")]
-    public String Name { get; set; } = null!;
+    public string Name { get; set; } = null!;
+
     [Column("email")]
-    public String Email { get; set; } = null!;
+    public string Email { get; set; } = null!;
+
     [Column("gender")]
-    public String? Gender { get; set; }
+    public string? Gender { get; set; }
 
     public ICollection<Order> Orders { get; set; } = new List<Order>();
 }
+
 [Table("products")]
 public class Product
 {
     [Column("product_id")]
-    public int ProductID { get; set; }
+    public int ProductId { get; set; }
+
+    [Column("name")]
+    public string Name { get; set; } = null!;
 
     [Column("price")]
-    public int Price { get; set; }
+    public decimal Price { get; set; }
 
     [Column("stock")]
     public int Stock { get; set; }
 }
+
 [Table("orders")]
 public class Order
 {
     [Column("order_id")]
-    public int OrderID { get; set; }
+    public int OrderId { get; set; }
+
+    [Column("customer_id")]
+    public int CustomerId { get; set; }
 
     [Column("order_date")]
     public DateTime OrderDate { get; set; }
@@ -49,6 +58,7 @@ public class Order
     public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
     public ICollection<Payment> Payments { get; set; } = new List<Payment>();
 }
+
 [Table("order_items")]
 public class OrderItem
 {
@@ -85,29 +95,16 @@ public class Payment
     public decimal Amount { get; set; }
 
     [Column("payment_method")]
-    public string PaymentMethod { get; set; } = null!; // Örn: Credit Card, PayPal
+    public string PaymentMethod { get; set; } = null!;
 
     [Column("status")]
-    public string Status { get; set; } = null!; // Örn: Completed, Pending, Failed
+    public string Status { get; set; } = null!;
+
+    // Navigation Property
+    public Order Order { get; set; } = null!;
 }
 
-// C# 12 Primary Constructor ve Positional Record Kullanımı
-public record OrderReportDto(
-    int OrderId,
-    string CustomerName,
-    decimal TotalAmount,
-    string OrderStatus
-);
-// Performans kritik durumlar için bellek dostu Record Struct
-public readonly record struct FinancialMetrics(
-    decimal TotalRevenue,
-    decimal TotalTax,
-    decimal NetProfit
-);
-// Gelişmiş Pattern Matching için kullanılacak kontrat yapısı
-public record PaymentAnalysisResult(
-    int OrderId,
-    decimal OriginalAmount,
-    decimal FinalAmountWithFee,
-    string FeeDetails
-);
+// C# 12/13 Record Yapıları
+public record OrderReportDto(int OrderId, string CustomerName, decimal TotalAmount, string OrderStatus);
+public readonly record struct FinancialMetrics(decimal TotalRevenue, decimal TotalTax, decimal NetProfit);
+public record PaymentAnalysisResult(int OrderId, decimal OriginalAmount, decimal FinalAmountWithFee, string FeeDetails);
