@@ -1,89 +1,102 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
 namespace Week1_CSharpFundamentals;
 
-public class ShippingService(AppDbContext dbContext)
+using Week1_CSharpFundamentals;
+public class OrderAnalysisService(AppDbContext context)
 {
-    public IQueryable<Shipment> GetPendingShipmentsQuery()
+    private readonly AppDbContext _context = context;
+
+    // 1. IQueryable ve Deferred Execution Deneyimi (Filtreleme)
+    public IQueryable<Order> GetPendingOrShippedOrdersQuery()
     {
-        return dbContext.Shipments
-            .Include(s => s.Shipper)
-            .Where(s => s.ShippedDate == null);
+        // SQL sorgusu henüz veri tabanına GİTMEDİ. Sadece sorgu planı hazırlandı (Deferred Execution).
+        var query = _context.Orders
+            .Where(o => o.Status == "Pending" || o.Status == "Shipped");
+
+        return query;
     }
 
-    public void CompareShippingBehaviors()
+    // 2. Asenkron Veri Çekme ve IEnumerable ile Bellek İçi Raporlama
+    public async Task<List<OrderReportDto>> GenerateOrderReportAsync()
     {
-        Console.WriteLine("\n[IQueryable Sorgu Testi] (Filtreleme SQL Sunucusunda Yapılır)");
-        var queryableResult = GetPendingShipmentsQuery()
-            .Where(s => s.ShipperId == 1)
-            .Take(2)
-            .ToList();
+        // IQueryable olarak sorguyu hazırlıyoruz (SQL tarafında çalışacak kısım)
+        IQueryable<Order> orderQuery = _context.Orders
+            .Include(o => o.Customer)
+            .Include(o => o.OrderItems)
+            .Where(o => o.OrderItems.Count > 0);
 
-        Console.WriteLine("\n[IEnumerable Sorgu Testi] (Filtreleme RAM'de Yapılır!)");
-        var enumerableResult = GetPendingShipmentsQuery()
-            .AsEnumerable()
-            .Where(s => s.ShipperId == 1)
-            .Take(2)
-            .ToList();
+        // Sorgu tam bu satırda, ToListAsync() tetiklendiğinde asenkron olarak SQL'e gider.
+        // ConfigureAwait(false) kullanarak bu thread'in UI context'ine geri dönme zorunluluğunu kaldırıyoruz.
+        List<Order> orders = await orderQuery
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        // Veri belleğe (In-Memory) indi. Artık IEnumerable dünyasındayız.
+        // C# 12 Primary Constructor özelliğine sahip Record nesnelerimizi üretiyoruz.
+        IEnumerable<OrderReportDto> report = orders.Select(o => new OrderReportDto(
+            o.OrderId,
+            o.Customer.Name,
+            o.OrderItems.Sum(oi => oi.Quantity * oi.Price),
+            o.Status
+        ));
+
+        return report.ToList();
     }
 
-    public CarrierPerformanceReport AnalyzeCarrierPerformance(int shipperId)
+    // 3. Modern Pattern Matching Yapısı
+    public string AnalyzeOrderStatusWithPattern(Order order)
     {
-        var shipments = dbContext.Shipments
-            .Where(s => s.ShipperId == shipperId)
-            .ToList();
-
-        int totalShipments = shipments.Count;
-
-        // String olan FreightCost alanını güvenli bir şekilde decimal'a çevirip topluyoruz
-        decimal totalFreightCost = shipments
-            .Sum(s => decimal.TryParse(s.FreightCost, out var val) ? val : 0m);
-
-        double averageDeliveryDays = shipments
-            .Where(s => s.ShippedDate.HasValue && s.DeliveredDate.HasValue)
-            .Select(s => (s.DeliveredDate!.Value - s.ShippedDate!.Value).TotalDays)
-            .DefaultIfEmpty(0)
-            .Average();
-
-        string efficiencyRating = (totalShipments, averageDeliveryDays, totalFreightCost) switch
+        // C# 12/13 Switch Expression ve Property Pattern bir arada kullanımı
+        return order switch
         {
-            (0, _, _) => "No Activity",
-            ( > 50, > 5.0, _) => "Critical Delay: High Volume But Slow",
-            (_, <= 2.0, < 10000) => "Excellent: Fast and Cost-Effective",
-            (_, > 2.0 and <= 5.0, >= 10000) => "Standard: High Cost",
-            _ => "Stable"
+            { Status: "Pending" } => "Sipariş alındı, paketleme sırası bekliyor.",
+            { Status: "Shipped" } => "Sipariş kargoya verildi, yolda.",
+            { Status: "Delivered" } => "Sipariş müşteriye başarıyla teslim edildi.",
+            { Status: var unknownStatus } => $"Bilinmeyen sipariş durumu detected: {unknownStatus}"
+        };
+    }
+
+    // 4. ValueTask ve Gelişmiş Ödeme/Komisyon Hesaplama Simülasyonu
+    public async ValueTask<PaymentAnalysisResult> CalculatePaymentFeeAsync(int paymentId)
+    {
+        // SingleOrDefaultAsync veri tabanından tek bir kayıt çeker.
+        var payment = await _context.Payments
+            .SingleOrDefaultAsync(p => p.PaymentId == paymentId)
+            .ConfigureAwait(false);
+
+        if (payment == null)
+        {
+            return new PaymentAnalysisResult(0, 0, 0, "Ödeme kaydı bulunamadı.");
+        }
+
+        // Simüle edilmiş kısa bir asenkron gecikme (Örn: Banka API kontrolü)
+        await Task.Delay(50).ConfigureAwait(false);
+
+        // C# Modern Pattern Matching ile komisyon hesaplama kuralları
+        (decimal finalAmount, string details) = payment switch
+        {
+            // Ödeme başarılı ve Credit Card ise %1.5 komisyon
+            { Status: "Completed", PaymentMethod: "Credit Card" }
+                => (payment.Amount * 1.015m, "Kredi kartı %1.5 vade farkı uygulandı."),
+
+            // Ödeme başarılı ve PayPal ise %3 sabit komisyon
+            { Status: "Completed", PaymentMethod: "PayPal" }
+                => (payment.Amount * 1.03m, "PayPal %3 komisyon uygulandı."),
+
+            // Ödeme başarılı ama diğer yöntemler ise komisyonsuz
+            { Status: "Completed" }
+                => (payment.Amount, "Komisyonsuz doğrudan tahsilat."),
+
+            // Ödeme başarısız veya iptal ise işlem ücreti yok
+            _ => (payment.Amount, "Başarısız ödeme, işlem ücreti hesaplanmadı.")
         };
 
-        return new CarrierPerformanceReport(totalShipments, totalFreightCost, efficiencyRating);
-    }
-
-    public void DemonstrateDtoCopy()
-    {
-        var shipmentDto = dbContext.Shipments
-            .Include(s => s.Shipper)
-            .AsEnumerable() // Tip dönüştürme (TryParse) işlemini RAM tarafında güvenle yapabilmek için
-            .Select(s => new ShipmentDetailDto(
-                s.ShipmentId,
-                s.Shipper.ShipperName,
-                s.TrackingNumber ?? "PENDING",
-                decimal.TryParse(s.FreightCost, out var cost) ? cost : 0m,
-                s.ShippedDate == null ? "Preparing" : "In Transit"
-            ))
-            .FirstOrDefault();
-
-        if (shipmentDto is not null)
-        {
-            var updatedDto = shipmentDto with
-            {
-                TrackingNumber = "TRK-999888777",
-                DeliveryStatus = "Shipped"
-            };
-
-            Console.WriteLine($"Orijinal Record: {shipmentDto}");
-            Console.WriteLine($"Kopyalanan Record: {updatedDto}");
-        }
+        return new PaymentAnalysisResult(
+            payment.OrderId,
+            payment.Amount,
+            finalAmount,
+            details
+        );
     }
 }
