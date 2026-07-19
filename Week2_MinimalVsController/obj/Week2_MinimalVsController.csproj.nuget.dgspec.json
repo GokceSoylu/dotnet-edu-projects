@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/gokcesoylu/dotnet-edu-projects/Week2_MinimalVsController/Week2_MinimalVsController/Week2_MinimalVsController.csproj": {}
+    "/Users/gokcesoylu/dotnet-edu-projects/Week2_MinimalVsController/Week2_MinimalVsController.csproj": {}
   },
   "projects": {
-    "/Users/gokcesoylu/dotnet-edu-projects/Week2_MinimalVsController/Week2_MinimalVsController/Week2_MinimalVsController.csproj": {
+    "/Users/gokcesoylu/dotnet-edu-projects/Week2_MinimalVsController/Week2_MinimalVsController.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/gokcesoylu/dotnet-edu-projects/Week2_MinimalVsController/Week2_MinimalVsController/Week2_MinimalVsController.csproj",
+        "projectUniqueName": "/Users/gokcesoylu/dotnet-edu-projects/Week2_MinimalVsController/Week2_MinimalVsController.csproj",
         "projectName": "Week2_MinimalVsController",
-        "projectPath": "/Users/gokcesoylu/dotnet-edu-projects/Week2_MinimalVsController/Week2_MinimalVsController/Week2_MinimalVsController.csproj",
+        "projectPath": "/Users/gokcesoylu/dotnet-edu-projects/Week2_MinimalVsController/Week2_MinimalVsController.csproj",
         "packagesPath": "/Users/gokcesoylu/.nuget/packages/",
-        "outputPath": "/Users/gokcesoylu/dotnet-edu-projects/Week2_MinimalVsController/Week2_MinimalVsController/obj/",
+        "outputPath": "/Users/gokcesoylu/dotnet-edu-projects/Week2_MinimalVsController/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/gokcesoylu/.nuget/NuGet/NuGet.Config"
