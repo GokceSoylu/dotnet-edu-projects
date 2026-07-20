@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Week2_MinimalVsController")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3438db9fa2a073f752d12f1fb36a631083b8d364")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bc17f62b94dc7bdfe57f070cb625d3cb8703afee")]
 [assembly: System.Reflection.AssemblyProductAttribute("Week2_MinimalVsController")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Week2_MinimalVsController")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
