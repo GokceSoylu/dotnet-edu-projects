@@ -1,3 +1,4 @@
+using Week2_MinimalVsController.Exceptions;
 using Week2_MinimalVsController.Middlewares;
 using Week2_MinimalVsController.Services;
 
@@ -11,7 +12,10 @@ builder.Services.AddSingleton<ISingletonService, LifetimeService>();
 
 var app = builder.Build();
 
-// CUSTOM MIDDLEWARE'I BORU HATTINA EKLİYORUZ
+// 1. GLOBAL EXCEPTION MIDDLEWARE EN ÜSTE EKLENİR
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+// 2. LOGGING MIDDLEWARE
 app.UseMiddleware<RequestLoggingMiddleware>();
 
 app.MapGet("/api/minimal/hello", () => Results.Ok(new { message = "Hello from Minimal API!" }));
@@ -34,6 +38,21 @@ app.MapGet("/api/lifetime", (
         Singleton_Call2 = singleton2.GetGuid()
     };
 
+    return Results.Ok(result);
+});
+
+// HATA TEST ENDPOINT'LERİ
+// A. Özel 404 Hatası Testi
+app.MapGet("/api/test/notfound", () =>
+{
+    throw new NotFoundException("Aradığınız ürün veritabanında bulunamadı!");
+});
+
+// B. Beklenmeyen 500 Hatası Testi
+app.MapGet("/api/test/servererror", () =>
+{
+    int number = 0;
+    int result = 10 / number; // Sıfıra bölünme hatası (DivideByZeroException)
     return Results.Ok(result);
 });
 
