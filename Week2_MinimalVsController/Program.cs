@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http.HttpResults;
+using Week2_MinimalVsController.DTOs;
 using Week2_MinimalVsController.Exceptions;
 using Week2_MinimalVsController.Middlewares;
 using Week2_MinimalVsController.Services;
@@ -12,48 +14,48 @@ builder.Services.AddSingleton<ISingletonService, LifetimeService>();
 
 var app = builder.Build();
 
-// 1. GLOBAL EXCEPTION MIDDLEWARE EN ÜSTE EKLENİR
 app.UseMiddleware<ExceptionHandlingMiddleware>();
-
-// 2. LOGGING MIDDLEWARE
 app.UseMiddleware<RequestLoggingMiddleware>();
 
-app.MapGet("/api/minimal/hello", () => Results.Ok(new { message = "Hello from Minimal API!" }));
-
-app.MapGet("/api/lifetime", (
-    ITransientService transient1,
-    ITransientService transient2,
-    IScopedService scoped1,
-    IScopedService scoped2,
-    ISingletonService singleton1,
-    ISingletonService singleton2) =>
+// ÖRNEK VERİ LİSTESİ (Dummy Data)
+var products = new List<ProductDto>
 {
-    var result = new
+    new(1, "Laptop", 25000),
+    new(2, "Kablosuz Klavye", 1200),
+    new(3, "Oyuncu Faresi", 850)
+};
+
+// --------------------------------------------------------------------------
+// PERŞEMBE PRATİĞİ: TypedResults ve DTO/ApiResponse Kullanımı
+// --------------------------------------------------------------------------
+
+// 1. Tüm Ürünleri Getir (TypedResults.Ok)
+app.MapGet("/api/products", () =>
+{
+    var response = ApiResponse<List<ProductDto>>.Success(products, "Ürün listesi getirildi.");
+    return TypedResults.Ok(response);
+});
+
+// 2. Id'ye Göre Ürün Getir (TypedResults ve Result Pattern)
+app.MapGet("/api/products/{id:int}", Results<Ok<ApiResponse<ProductDto>>, NotFound<ApiResponse<ProductDto>>> (int id) =>
+{
+    var product = products.FirstOrDefault(p => p.Id == id);
+    if (product is null)
     {
-        Transient_Call1 = transient1.GetGuid(),
-        Transient_Call2 = transient2.GetGuid(),
-        Scoped_Call1 = scoped1.GetGuid(),
-        Scoped_Call2 = scoped2.GetGuid(),
-        Singleton_Call1 = singleton1.GetGuid(),
-        Singleton_Call2 = singleton2.GetGuid()
-    };
+        var failResponse = ApiResponse<ProductDto>.Fail($"ID değeri {id} olan ürün bulunamadı.");
+        return TypedResults.NotFound(failResponse);
+    }
 
-    return Results.Ok(result);
+    var successResponse = ApiResponse<ProductDto>.Success(product, "Ürün detayı getirildi.");
+    return TypedResults.Ok(successResponse);
 });
 
-// HATA TEST ENDPOINT'LERİ
-// A. Özel 404 Hatası Testi
-app.MapGet("/api/test/notfound", () =>
+// 3. Yeni Ürün Ekle (Created Response)
+app.MapPost("/api/products", (ProductDto newProduct) =>
 {
-    throw new NotFoundException("Aradığınız ürün veritabanında bulunamadı!");
-});
-
-// B. Beklenmeyen 500 Hatası Testi
-app.MapGet("/api/test/servererror", () =>
-{
-    int number = 0;
-    int result = 10 / number; // Sıfıra bölünme hatası (DivideByZeroException)
-    return Results.Ok(result);
+    products.Add(newProduct);
+    var response = ApiResponse<ProductDto>.Success(newProduct, "Yeni ürün başarıyla eklendi.");
+    return TypedResults.Created($"/api/products/{newProduct.Id}", response);
 });
 
 app.MapControllers();
