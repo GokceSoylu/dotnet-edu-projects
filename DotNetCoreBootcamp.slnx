@@ -3,4 +3,5 @@
     <Project Path="Week2_MinimalVsController/Week2_MinimalVsController/Week2_MinimalVsController.csproj" />
   </Folder>
   <Project Path="Week1_CSharpFundamentals/Week1_CSharpFundamentals.csproj" />
+  <Project Path="Week2_BaseApiTemplate/Week2_BaseApiTemplate.csproj" />
 </Solution>
