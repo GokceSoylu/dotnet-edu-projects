@@ -29,3 +29,4 @@ This repository is iteratively updated to cover a **13-week intensive technical 
 ```bash
 .
 ├── /Week1_CSharpFundamentals/  # Async/await, LINQ practices, Delegates
+├── /Week2_MinimalVsController/ # Minimal API vs Controller, DI, Custom Middleware, DTOs 
