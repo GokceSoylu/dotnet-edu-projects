@@ -30,3 +30,4 @@ This repository is iteratively updated to cover a **13-week intensive technical 
 .
 ├── /Week1_CSharpFundamentals/  # Async/await, LINQ practices, Delegates
 ├── /Week2_MinimalVsController/ # Minimal API vs Controller, DI, Custom Middleware, DTOs 
+├── /Week2_BaseApiTemplate # week 2 general example and bease template for project1
