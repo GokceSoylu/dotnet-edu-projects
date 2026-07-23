@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/gokcesoylu/dotnet-edu-projects/Week2_BaseApiTemplate/Week2_BaseApiTemplate/Week2_BaseApiTemplate.csproj",
+      "projectUniqueName": "/Users/gokcesoylu/dotnet-edu-projects/Week2_BaseApiTemplate/Week2_BaseApiTemplate.csproj",
       "projectName": "Week2_BaseApiTemplate",
-      "projectPath": "/Users/gokcesoylu/dotnet-edu-projects/Week2_BaseApiTemplate/Week2_BaseApiTemplate/Week2_BaseApiTemplate.csproj",
+      "projectPath": "/Users/gokcesoylu/dotnet-edu-projects/Week2_BaseApiTemplate/Week2_BaseApiTemplate.csproj",
       "packagesPath": "/Users/gokcesoylu/.nuget/packages/",
-      "outputPath": "/Users/gokcesoylu/dotnet-edu-projects/Week2_BaseApiTemplate/Week2_BaseApiTemplate/obj/",
+      "outputPath": "/Users/gokcesoylu/dotnet-edu-projects/Week2_BaseApiTemplate/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/gokcesoylu/.nuget/NuGet/NuGet.Config"

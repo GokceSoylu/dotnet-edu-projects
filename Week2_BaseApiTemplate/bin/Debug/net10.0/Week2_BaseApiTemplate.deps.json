@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "Week2_BaseApiTemplate/1.0.0": {
+        "runtime": {
+          "Week2_BaseApiTemplate.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Week2_BaseApiTemplate/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
